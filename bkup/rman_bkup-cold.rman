@@ -1,0 +1,33 @@
+###################################################################
+# NAME: rman_bkup-cold.rman                                       #
+# DESC: RMAN script used for offline or cold backups.             #
+#                                                                 #
+#       PARAMETERS: %1 - Backup TAG                               #
+#                                                                 #
+#       USAGE:                                                    #
+#       $ORACLE_HOME/bin/rman $0 USING %1                         #
+#                                                                 #
+# LOG:                                                            #
+# yyyy/mm/dd [name]: [version]-[notes]                            #
+# 2014/08/27 cgwong: v0.1.0-Initial creation                      #
+###################################################################
+
+# Restart the DB in mount mode
+SHUTDOWN IMMEDIATE;
+STARTUP MOUNT;
+
+# Backup the database (not necessary to backup any archived redo logs)
+RUN
+{ 
+  BACKUP
+    ${BKUP_OPTS}
+    TAG %1
+    DATABASE
+      INCLUDE CURRENT CONTROLFILE
+  ;
+}
+
+# Open the database again
+SQL 'ALTER DATABASE OPEN';
+
+# -- END -- #

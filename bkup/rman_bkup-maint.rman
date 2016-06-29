@@ -1,0 +1,37 @@
+###############################################################
+# NAME: rman_bkup-maint.rman                                  #
+# DESC: RMAN script used for maintenance tasks. Removes       #
+#       expired and obsolete backups. This should be done     #
+#       prior to taking any backups as it may influence what  #
+#       is actually done.                                     #
+#                                                             #
+#       PARAMETERS: %1 - Device type [ disk | sbt ]           #
+#                   %2 - NB_ORA_CLIENT                        #
+#                                                             #
+#       USAGE:                                                #
+#       $ORACLE_HOME/bin/rman $0 USING %1 %2                  #
+#                                                             #
+# LOG:                                                        #
+# yyyy/mm/dd [name]: [version]-[notes]                        #
+# 2014/08/27 cgwong: v0.1.0-Initial creation                  #
+###############################################################
+
+RUN
+{
+  ALLOCATE CHANNEL TYPE %1;
+  SEND 'NB_ORA_CLIENT=%2';
+  
+  # Archived redo log maintenance
+  CROSSCHECK ARCHIVELOG ALL;
+  # Ensure ARCHIVELOG deletion policy is followed
+  DELETE NOPROMPT EXPIRED ARCHIVELOG ALL;
+  
+  # Datafile maintenance
+  CROSSCHECK BACKUP;
+  DELETE NOPROMPT EXPIRED BACKUP;
+
+  DELETE NOPROMPT OBSOLETE;
+  RELEASE CHANNEL;
+}
+
+# -- END -- #

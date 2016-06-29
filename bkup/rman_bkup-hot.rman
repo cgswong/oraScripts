@@ -1,0 +1,28 @@
+###################################################################
+# NAME: rman_bkup-hot.rman                                        #
+# DESC: RMAN script used for hot or online backups.               #
+#                                                                 #
+#       PARAMETERS: %1 - Backup TAG                               #
+#                                                                 #
+#       USAGE:                                                    #
+#       $ORACLE_HOME/bin/rman $0 USING %1                         #
+#                                                                 #
+# LOG:                                                            #
+# yyyy/mm/dd [name]: [version]-[notes]                            #
+# 2014/08/27 cgwong: v0.1.0-Initial creation                      #
+###################################################################
+
+# 1. Backup the database plus archived redo logs and control file
+# 2. Remove the archived redo logs after the backup
+RUN
+{ 
+  BACKUP
+    ${BKUP_OPTS}
+    TAG %1
+    DATABASE 
+      INCLUDE CURRENT CONTROLFILE
+      PLUS ARCHIVELOG DELETE ALL INPUT
+  ;
+}
+
+# -- END -- #

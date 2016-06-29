@@ -1,0 +1,78 @@
+##############################################################################################
+# NAME: rman_bkup.par
+# DESC: This parameter file is used by the rman_bkup.sh script and holds the list of backup
+#       options to be used with a particular Oracle SID.
+##############################################################################################
+
+# -- NetBackup settings -- #
+# NB master server to which the backup will run.
+# Not valid for disk backups.
+##NB_ORA_SERV="na1000bmaprd01"
+
+# NB classification with which the backup will run.
+# Not valid for disk backups.
+##NB_ORA_CLASS="Oracle_Hot"
+
+# NB Oracle backup policy under which the backup will run.
+# Not valid for disk backups.
+##NB_ORA_POLICY="Oracle"
+
+# NB tape block size.
+##BLKSIZE=
+
+# -- Recovery Catalog -- #
+# RMAN catalog connection string
+# CATALOG="nocatalog" --> specifies there is no RMAN catalog database (i.e. use control file)
+# CATALOG="/@<tns>"   --> format assumes Oracle Wallet is being used for authentication
+CATALOG=nocatalog
+
+
+# -- Target DB -- #
+# Oracle SID
+ORACLE_SID=oidd1
+
+# Connection string to be used to the database to be backed up.
+# TGT_CONN="/" --> connects as SYS via OS credentials
+TGT_CONN=/
+
+
+# -- RMAN Options -- #
+# Type of backup to perform
+# full   --> Full online/hot backup
+# cold   --> Full offline/cold backup
+# arch   --> Archived redo log backup
+# d2t    --> Disk to tape copy
+# inc    --> Incremental differential backup
+# merged --> Merged Incremental backup
+BKUP_TYPE=full
+
+# Backup disk destination.
+# Not valid for tape backups.
+BKUP_DEST="/dbamaint/bkups/files"
+
+# Number of channels (parallelism) to use for backup.
+CHANNELS=1
+
+# Maximum number of DB data files to open at a time running backup.
+MAXOPENFILES=10
+
+# Maximum number of DB data files to store in each backup set.
+FILESPERSET=10
+
+# Type of RMAN compression to use for backup.
+##COMPRESSION=
+
+# Set ARCHIVELOG deletion policy. Options:
+# applied --> Logs are only eligible for deletion if applied at all mandatory standbys
+# shipped --> Logs are only eligible for deletion if transferred to all mandatory standbys
+# disk    --> Logs are only eligible for deletion if backed up at least once to disk
+# tape    --> Logs are only eligible for deletion if backed up at least once to tape
+# default --> Logs are eligible for deletion using default criteria
+# Note: For the standby options this only works (in 11g+) if LOG_ARCHIVE_DEST_2 has been set
+# on a primary with the standby as a mandatory destination; otherwise an error is reported:
+# RMAN-08591: WARNING: invalid archived log deletion policy
+# WARNING: Changing a remote destination to mandatory means the primary shuts down if
+# it can't talk to the standby.
+ARCHIVELOG_DELETE_POLICY=default
+
+# -- END -- #

@@ -1,0 +1,53 @@
+###############################################################
+# NAME: rman_bkup-common.rman                                 #
+# DESC: Common RMAN configuration setup.                      #
+#                                                             #
+#       PARAMETERS: %1 - DISK_DEST                            #
+#                   %2 - DISK_CHANNELS                        #
+#                   %3 - SBT_CHANNELS                         #
+#                   %4 - NB_ORA_POLICY                        #
+#                   %5 - NB_ORA_CLASS                         #
+#                   %6 - NB_ORA_SERV                          #
+#                                                             #
+#       USAGE:                                                #
+#       $ORACLE_HOME/bin/rman $0 USING %1 %2 %3 %4 %5 %6      #
+#                                                             #
+# LOG:                                                        #
+# yyyy/mm/dd [name]: [version]-[notes]                        #
+# 2014/08/27 cgwong: v0.1.0-Initial creation                  #
+###############################################################
+
+# Set backup retention policy using recovery window
+CONFIGURE RETENTION POLICY TO RECOVERY WINDOW OF 7 DAYS;
+
+# Set ARCHIVELOG deletion policy for standby ensuring they are only deleted
+# after being applied
+CONFIGURE ARCHIVELOG DELETION POLICY TO APPLIED ON ALL STANDBY;
+
+# Skip backing up files for which there already exists
+# a valid backup with the same checkpoint.
+CONFIGURE BACKUP OPTIMIZATION ON;
+
+# Enable CONTROLFILE AUTOBACKUP
+# This is not necessary when using an RMAN Catalog.
+CONFIGURE CONTROLFILE AUTOBACKUP ON;
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE disk TO '${DISK_DEST}/%F';
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE sbt TO '%F';
+
+# Set SBT channel configuration
+CONFIGURE DEVICE TYPE sbt PARALLELISM &2;
+CONFIGURE CHANNEL DEVICE TYPE sbt FORMAT '%U_%t';
+CONFIGURE CHANNEL DEVICE TYPE sbt PARMS='SBT_LIBRARY=/usr/openv/netbackup/bin/libobk.so64 ENV=(NB_ORA_POLICY=&3, NB_ORA_CLASS=&4, NB_ORA_SERV=&5)';
+
+# Set DISK channel configuration
+CONFIGURE DEVICE TYPE disk PARALLELISM &1;
+CONFIGURE CHANNEL DEVICE TYPE disk FORMAT '${DISK_DEST}/%U_%t';
+
+# Set the default channel to disk
+CONFIGURE DEFAULT DEVICE TYPE TO disk;
+
+# Output the configuration
+SHOW ALL;
+
+
+# -- END -- #

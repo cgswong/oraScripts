@@ -1,0 +1,33 @@
+#######################################################################
+# NAME: rman_bkup-merged.rman                                         #
+# DESC: RMAN script used for merged incremental hot backups.          #
+#                                                                     #
+#       PARAMETERS: %1 - Backup TAG                                   #
+#                                                                     #
+#       USAGE:                                                        #
+#       $ORACLE_HOME/bin/rman $0 USING %1                             #
+#                                                                     #
+# LOG:                                                                #
+# yyyy/mm/dd [name]: [version]-[notes]                                #
+# 2014/08/27 cgwong: v0.1.0-Initial creation                          #
+#######################################################################
+
+# 1. Create a new level 1 incremental backup.
+#    On first run this will be level 0 incremental
+#    and then a level 1 incremental on subsequent days.
+# 2. Roll forward last level 0 copy of database 
+#    applying level 1 incremental backup taken previously.
+RUN
+{ 
+  BACKUP
+    ${BKUP_OPTS}
+    INCREMENTAL LEVEL 1 
+    FOR RECOVER OF COPY WITH TAG %1
+    DATABASE 
+  ;
+  RECOVER COPY OF DATABASE 
+    WITH TAG %1
+  ;
+}
+
+# -- END -- #

@@ -1,0 +1,17 @@
+###################################################################
+# NAME: rman_bkup-d2t.rman                                        #
+# DESC: RMAN script used to backup BACKUPSETS from disk to tape.  #
+#                                                                 #
+# LOG:                                                            #
+# yyyy/mm/dd [name]: [version]-[notes]                            #
+# 2014/08/27 cgwong: v0.1.0-Initial creation                      #
+###################################################################
+
+# Backup the BACKUPSETS from disk that are not already backed up
+RUN
+{ BACKUP
+    BACKUPSET ALL
+  ;
+}
+
+# -- END -- #

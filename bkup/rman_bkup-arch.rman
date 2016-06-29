@@ -1,0 +1,25 @@
+###################################################################
+# NAME: rman_bkup-arch.rman                                       #
+# DESC: RMAN script used for archived redo log backups. The files #
+#       are removed afterwards (in accordance with the archived   #
+#       redo log deletion policy).                                #
+#                                                                 #
+#       PARAMETERS: %1 - Backup TAG                               #
+#                                                                 #
+#       USAGE:                                                    #
+#       $ORACLE_HOME/bin/rman $0 USING %1                         #
+# LOG:                                                            #
+# yyyy/mm/dd [name]: [version]-[notes]                            #
+# 2014/08/27 cgwong: v0.1.0-Initial creation                      #
+###################################################################
+
+RUN
+{ 
+  BACKUP
+    ${BKUP_OPTS}
+    TAG %1
+    ARCHIVELOG ALL DELETE ALL INPUT
+  ;
+}
+
+# -- END -- #
